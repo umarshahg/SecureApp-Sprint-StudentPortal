@@ -1,0 +1,9 @@
+<h2>Result</h2>
+
+<p>Name: {{ data.name }}</p>
+<p>Marks: {{ data.marks }}</p>
+
+<form method="POST" action="/edit/{{ id }}">
+    <input name="marks">
+    <button type="submit">Update</button>
+</form>

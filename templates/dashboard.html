@@ -1,0 +1,8 @@
+<h2>Dashboard</h2>
+
+{% for id, r in results.items() %}
+    <p>
+        {{ r.name }} - {{ r.marks }}
+        <a href="/result/{{ id }}">View</a>
+    </p>
+{% endfor %}
