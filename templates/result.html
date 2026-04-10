@@ -1,9 +1,50 @@
-<h2>Result</h2>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Result</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #eef2f3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .box {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px gray;
+            width: 300px;
+        }
+        input {
+            width: 90%;
+            padding: 8px;
+            margin: 10px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px;
+            width: 95%;
+        }
+    </style>
+</head>
+<body>
 
-<p>Name: {{ data.name }}</p>
-<p>Marks: {{ data.marks }}</p>
+<div class="box">
+    <h2>{{ data.name }}</h2>
+    <p>Current Marks: {{ data.marks }}</p>
 
-<form method="POST" action="/edit/{{ id }}">
-    <input name="marks">
-    <button type="submit">Update</button>
-</form>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        {{ form.marks.label }} <br>
+        {{ form.marks() }} <br>
+        {{ form.submit() }}
+    </form>
+</div>
+
+</body>
+</html>

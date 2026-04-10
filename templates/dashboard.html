@@ -1,8 +1,45 @@
-<h2>Dashboard</h2>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f6f9;
+            padding: 20px;
+        }
+        h2 {
+            text-align: center;
+        }
+        .card {
+            background: white;
+            padding: 15px;
+            margin: 10px auto;
+            width: 300px;
+            border-radius: 10px;
+            box-shadow: 0 0 5px gray;
+            text-align: center;
+        }
+        a {
+            text-decoration: none;
+            color: white;
+            background: #28a745;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Welcome {{ user }}</h2>
 
 {% for id, r in results.items() %}
-    <p>
-        {{ r.name }} - {{ r.marks }}
+    <div class="card">
+        <h3>{{ r.name }}</h3>
+        <p>Marks: {{ r.marks }}</p>
         <a href="/result/{{ id }}">View</a>
-    </p>
+    </div>
 {% endfor %}
+
+</body>
+</html>
