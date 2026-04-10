@@ -1,9 +1,12 @@
 1. Static Application Security Testing (SAST)
+
 1.1 Introduction
 
 Static Application Security Testing (SAST) is a security testing methodology that involves analyzing the source code of an application without executing it. The purpose of SAST is to identify potential vulnerabilities, insecure coding practices, and logical flaws at an early stage of the development lifecycle. This helps in reducing the cost and effort required to fix security issues later.
 
 In this project, SAST was performed using GitHub CodeQL, an advanced static analysis tool integrated within GitHub that scans the codebase for known vulnerability patterns.
+
+///////////////////////////////////////////////////
 
 1.2 Identified Vulnerabilities (Before Remediation)
 
@@ -13,6 +16,9 @@ Hardcoded Credentials: Usernames and passwords were stored directly in the sourc
 Insecure Direct Object Reference (IDOR): Users could manipulate URLs to access other students’ results.
 Absence of CSRF Protection: Forms were vulnerable to unauthorized requests.
 Lack of Security Headers: No protection against clickjacking or framing attacks.
+
+///////////////////////////////////////////////////
+
 1.3 Remediation Measures Implemented
 
 To address the identified issues, the following security controls were implemented:
@@ -23,6 +29,9 @@ Added secure HTTP headers, including:
 X-Frame-Options
 Content-Security-Policy
 Improved code structure and validation mechanisms.
+
+///////////////////////////////////////////////////
+
 1.4 Conclusion
 
 SAST ensured that the application adheres to secure coding standards and is free from major vulnerabilities at the code level. The use of automated tools like CodeQL enhances the reliability and consistency of the analysis.
