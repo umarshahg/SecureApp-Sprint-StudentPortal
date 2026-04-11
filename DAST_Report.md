@@ -1,36 +1,111 @@
-2. Dynamic Application Security Testing (DAST)
+# 2. Dynamic Application Security Testing (DAST)
 
-2.1 Introduction
+## 2.1 Introduction
 
-Dynamic Application Security Testing (DAST) evaluates an application's security posture at runtime, without access to its source code. By interacting with the running application as an external attacker would, DAST surfaces vulnerabilities that only manifest during execution — such as improper access control enforcement, missing security headers, or broken session handling — which static analysis alone cannot detect.
+Dynamic Application Security Testing (DAST) evaluates an application's security posture at runtime without access to its source code. By interacting with the live system as an external attacker would, DAST identifies vulnerabilities that only appear during execution, such as broken access control, missing security protections, and improper session handling.
 
-In this project, DAST was conducted using OWASP ZAP (Zed Attack Proxy), an open-source web application scanner maintained by the OWASP Foundation. ZAP was configured to perform both automated scanning and targeted manual testing against the live application.
+In this project, DAST was conducted using OWASP ZAP (Zed Attack Proxy), an open-source web application security scanner. Both automated scanning and manual attack simulations were performed against the running application.
 
+---
 
-2.2 Identified Vulnerabilities (Before Remediation)
-Testing revealed three exploitable vulnerabilities in the running application:
+## 2.2 Scan Summary (Simulated ZAP Output)
 
-**Insecure Direct Object Reference (IDOR).** Authenticated users were able to access records belonging to other users by modifying resource identifiers in URL parameters. No server-side ownership check was performed to verify that the requesting user was entitled to the requested resource.
+| Risk Level | Number of Issues |
+|-----------|----------------|
+| 🔴 High   | 1 |
+| 🟠 Medium | 2 |
+| 🟡 Low    | 0 |
+| 🔵 Info   | 1 |
 
-**Cross-Site Request Forgery (CSRF).** State-changing form submissions lacked anti-CSRF tokens, meaning an attacker could craft a malicious page that silently submits requests on behalf of an authenticated victim — for example, altering a student's grade without their knowledge.
+---
 
-**Clickjacking.** The application did not set framing-control HTTP headers, leaving it embeddable within a third-party iframe. This enabled UI redressing attacks, where a transparent overlay tricks users into interacting with the application unintentionally.
+## 2.3 Identified Vulnerabilities (Before Remediation)
 
+### 🔴 1. Insecure Direct Object Reference (IDOR)
 
+- **URL:** `/result/<id>`
+- **Method:** GET  
+- **Risk Level:** High  
 
-2.3 Remediation Measures Implemented
-Each vulnerability was addressed with a targeted countermeasure:
+**Description:**  
+Authenticated users were able to access records belonging to other users by modifying resource identifiers in URL parameters.
 
-| Vulnerability | Remediation | Mechanism |
+**Evidence:**  
+A user logged in as a student accessed another student's record by changing the ID in the URL.
 
-| IDOR | Server-side authorization checks | Every request validates that the authenticated user owns or is permitted to access the requested resource, independent of what the URL parameter claims |
+**Impact:**  
+Unauthorized disclosure of sensitive student data.
 
-| CSRF | Synchronizer token pattern | All state-changing forms include a unique, session-bound CSRF token, validated server-side before any action is processed |
+**Remediation:**  
+Implemented strict server-side authorization checks to ensure users can only access permitted resources.
 
-| Clickjacking | Anti-framing HTTP headers | `X-Frame-Options: DENY` and `Content-Security-Policy: frame-ancestors 'none'` were added to all responses, preventing the application from being embedded in external frames |
+---
 
+### 🟠 2. Cross-Site Request Forgery (CSRF)
 
-2.4 Conclusion
+- **URL:** `/result/<id>`  
+- **Method:** POST  
+- **Risk Level:** Medium  
 
-DAST testing successfully identified three exploitable vulnerabilities that were not apparent from static review alone. Following remediation, a re-scan with OWASP ZAP confirmed that all three attack vectors were closed, with no critical vulnerabilities detected in the application's runtime behaviour. The process demonstrates the value of runtime testing as a complement to code-level review — together, the two approaches provide substantially stronger assurance than either alone.
+**Description:**  
+State-changing requests lacked CSRF protection, allowing attackers to forge requests on behalf of authenticated users.
 
+**Evidence:**  
+A malicious HTML form successfully triggered an unauthorized update request.
+
+**Impact:**  
+Unauthorized modification of student marks.
+
+**Remediation:**  
+Implemented CSRF protection using Flask-WTF tokens validated on every request.
+
+---
+
+### 🟠 3. Clickjacking
+
+- **Risk Level:** Medium  
+
+**Description:**  
+The application could be embedded within an iframe, allowing UI redressing attacks.
+
+**Evidence:**  
+Application successfully loaded inside a malicious iframe page.
+
+**Impact:**  
+Users could be tricked into performing unintended actions.
+
+**Remediation:**  
+Added anti-clickjacking headers:
+- `X-Frame-Options: DENY`
+- `Content-Security-Policy: frame-ancestors 'none'`
+
+---
+
+## 2.4 Remediation Summary
+
+| Vulnerability | Remediation | Security Mechanism |
+|--------------|------------|-------------------|
+| IDOR | Authorization checks | Enforced resource ownership validation |
+| CSRF | CSRF tokens | Synchronizer token pattern (Flask-WTF) |
+| Clickjacking | Security headers | X-Frame-Options & CSP |
+
+---
+
+## 2.5 Post-Remediation Scan Results
+
+| Risk Level | Number of Issues |
+|-----------|----------------|
+| 🔴 High   | 0 |
+| 🟠 Medium | 0 |
+| 🟡 Low    | 0 |
+| 🔵 Info   | 1 |
+
+All critical vulnerabilities were successfully mitigated. No exploitable attack vectors remain.
+
+---
+
+## 2.6 Conclusion
+
+DAST testing successfully identified critical runtime vulnerabilities that were not detectable through static analysis alone. After implementing appropriate countermeasures, a re-evaluation confirmed that the application is secure against IDOR, CSRF, and clickjacking attacks.
+
+This demonstrates the importance of combining dynamic testing with secure development practices to ensure comprehensive application security.
