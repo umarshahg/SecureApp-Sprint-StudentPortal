@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head><title>Create Student</title></head>
+<body>
+<h2>Create New Student</h2>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% for category, message in messages %}
+    <p style="color:{{ 'green' if category == 'success' else 'red' }}">{{ message }}</p>
+  {% endfor %}
+{% endwith %}
+
+{% if error %}
+  <p style="color:red">{{ error }}</p>
+{% endif %}
+
+<form method="POST">
+  {% if form %}{{ form.hidden_tag() }}{% endif %}
+
+  <label>Username:<br>
+    {% if form %}
+      {{ form.username(size=30) }}
+    {% else %}
+      <input type="text" name="username" required>
+    {% endif %}
+  </label><br><br>
+
+  <label>Full Name:<br>
+    {% if form %}
+      {{ form.name(size=30) }}
+    {% else %}
+      <input type="text" name="name" required>
+    {% endif %}
+  </label><br><br>
+
+  <label>Password:<br>
+    {% if form %}
+      {{ form.password(size=30) }}
+    {% else %}
+      <input type="password" name="password" required>
+    {% endif %}
+  </label><br><br>
+
+  <button type="submit">Create Student</button>
+  <a href="/dashboard">Cancel</a>
+</form>
+</body>
+</html>

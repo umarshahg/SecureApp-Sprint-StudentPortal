@@ -11,11 +11,44 @@
         h2 {
             text-align: center;
         }
+ 
+        /* ── TOP BAR ── */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 960px;
+            margin: 0 auto 20px auto;
+        }
+        .topbar-actions {
+            display: flex;
+            gap: 10px;
+        }
+ 
+        /* ── FLASH MESSAGES ── */
+        .flash {
+            max-width: 960px;
+            margin: 0 auto 16px auto;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .flash.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .flash.error   { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+ 
+        /* ── CARDS ── */
+        .cards-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: center;
+            max-width: 960px;
+            margin: 0 auto;
+        }
         .card {
             background: white;
             padding: 15px;
-            margin: 10px auto;
-            width: 300px;
+            width: 280px;
             border-radius: 10px;
             box-shadow: 0 0 5px gray;
             text-align: center;
@@ -30,22 +63,72 @@
             font-weight: bold;
             color: #28a745;
         }
-        a {
+ 
+        /* ── BUTTONS ── */
+        .btn {
             text-decoration: none;
             color: white;
-            background: #28a745;
             padding: 5px 10px;
             border-radius: 5px;
             display: inline-block;
+            margin-top: 8px;
+            font-size: 13px;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-green  { background: #28a745; }
+        .btn-blue   { background: #007bff; }
+        .btn-orange { background: #fd7e14; }
+        .btn-red    { background: #dc3545; }
+        .btn-gray   { background: #6c757d; }
+ 
+        .card-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: center;
             margin-top: 10px;
+        }
+ 
+        /* ── ADMIN PANEL SECTION ── */
+        .admin-section {
+            max-width: 960px;
+            margin: 30px auto 10px auto;
+        }
+        .admin-section h3 {
+            border-bottom: 2px solid #dee2e6;
+            padding-bottom: 6px;
+            color: #343a40;
         }
     </style>
 </head>
 <body>
-<h2>Welcome, {{ user }}</h2>
-
+ 
+<!-- ── FLASH MESSAGES ── -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% for category, message in messages %}
+    <div class="flash {{ category }}">{{ message }}</div>
+  {% endfor %}
+{% endwith %}
+ 
+<!-- ── TOP BAR ── -->
+<div class="topbar">
+    <h2 style="margin:0;">Welcome, {{ user }}</h2>
+    <div class="topbar-actions">
+        {% if role == 'student' %}
+            <a class="btn btn-blue" href="/reset_password">Reset Password</a>
+        {% endif %}
+        {% if role == 'admin' %}
+            <a class="btn btn-green" href="/admin/create_student">+ Create Student</a>
+        {% endif %}
+        <a class="btn btn-gray" href="/logout">Logout</a>
+    </div>
+</div>
+ 
+<!-- ── RESULT CARDS ── -->
+<div class="cards-wrapper">
 {% for id, r in results.items() %}
-    {% if user == "admin" or user_result_map[user] == id %}
+    {% if user == "admin" or user_result_map.get(user) == id %}
     <div class="card">
         <h3>{{ r.name }}</h3>
         {% for course, mark in r.courses.items() %}
@@ -54,10 +137,37 @@
                 <span>{{ mark }}</span>
             </div>
         {% endfor %}
-        <a href="/result/{{ id }}">View</a>
+ 
+        <div class="card-actions">
+            <!-- View / Edit marks -->
+            <a class="btn btn-green" href="/result/{{ id }}">View</a>
+ 
+            {% if role == 'admin' %}
+                <!-- Find the username for this student_id -->
+                {% for s in students %}
+                    {% if s.student_id|string == id %}
+                        <!-- Set Password -->
+                        <a class="btn btn-orange"
+                           href="/admin/set_password/{{ s.username }}">
+                           Set Password
+                        </a>
+ 
+                        <!-- Delete Student -->
+                        <form method="POST"
+                              action="/admin/delete_student/{{ s.username }}"
+                              style="display:inline;"
+                              onsubmit="return confirm('Delete {{ s.username }}? This cannot be undone.');">
+                            {% if form %}{{ form.hidden_tag() }}{% endif %}
+                            <button class="btn btn-red" type="submit">Delete</button>
+                        </form>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </div>
     </div>
     {% endif %}
 {% endfor %}
-
+</div>
+ 
 </body>
 </html>
