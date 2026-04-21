@@ -20,25 +20,43 @@
             box-shadow: 0 0 5px gray;
             text-align: center;
         }
+        .course-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 15px;
+            font-size: 14px;
+        }
+        .course-row span:last-child {
+            font-weight: bold;
+            color: #28a745;
+        }
         a {
             text-decoration: none;
             color: white;
             background: #28a745;
             padding: 5px 10px;
             border-radius: 5px;
+            display: inline-block;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
-
-<h2>Welcome {{ user }}</h2>
+<h2>Welcome, {{ user }}</h2>
 
 {% for id, r in results.items() %}
+    {% if user == "admin" or user_result_map[user] == id %}
     <div class="card">
         <h3>{{ r.name }}</h3>
-        <p>Marks: {{ r.marks }}</p>
+        {% for course, mark in r.courses.items() %}
+            <div class="course-row">
+                <span>{{ course }}</span>
+                <span>{{ mark }}</span>
+            </div>
+        {% endfor %}
         <a href="/result/{{ id }}">View</a>
     </div>
+    {% endif %}
 {% endfor %}
 
 </body>

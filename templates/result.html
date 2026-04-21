@@ -16,12 +16,23 @@
             padding: 25px;
             border-radius: 10px;
             box-shadow: 0 0 10px gray;
-            width: 300px;
+            width: 320px;
+        }
+        .course-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+        .course-row span:last-child {
+            font-weight: bold;
+            color: #28a745;
         }
         input {
             width: 90%;
             padding: 8px;
-            margin: 10px;
+            margin: 10px 0;
         }
         button {
             background: #007bff;
@@ -29,6 +40,20 @@
             border: none;
             padding: 8px;
             width: 95%;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .edit-section {
+            margin-top: 15px;
+            border-top: 2px solid #eee;
+            padding-top: 10px;
+        }
+        .hint {
+            font-size: 12px;
+            color: gray;
+            margin-bottom: 5px;
         }
     </style>
 </head>
@@ -36,14 +61,25 @@
 
 <div class="box">
     <h2>{{ data.name }}</h2>
-    <p>Current Marks: {{ data.marks }}</p>
 
-    <form method="POST">
-        {{ form.hidden_tag() }}
-        {{ form.marks.label }} <br>
-        {{ form.marks() }} <br>
-        {{ form.submit() }}
-    </form>
+    {% for course, mark in data.courses.items() %}
+        <div class="course-row">
+            <span>{{ course }}</span>
+            <span>{{ mark }}</span>
+        </div>
+    {% endfor %}
+
+    {% if user == "admin" %}
+    <div class="edit-section">
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            <p class="hint">Format: CourseName:Mark &nbsp;&nbsp; e.g. Math:95</p>
+            {{ form.marks.label }}<br>
+            {{ form.marks() }}<br>
+            {{ form.submit() }}
+        </form>
+    </div>
+    {% endif %}
 </div>
 
 </body>
